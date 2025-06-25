@@ -430,29 +430,26 @@
             
             <!-- Navigation icons in middle -->
             <div class="flex flex-col space-y-4">
-                <!-- Dashboard -->
-                <button class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
+                <!-- Dashboard - Active page -->
+                <div class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center bg-white/20 backdrop-blur-sm transition-colors">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5v4"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v4"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 5v4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                     </svg>
-                </button>
+                </div>
                 
                 <!-- Calendar -->
-                <button class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
+                <a href="calendar.html" class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
-                </button>
+                </a>
                 
                 <!-- Reports -->
-                <button class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
+                <a href="reports.html" class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
-                </button>
+                </a>
             </div>
             
             <!-- User profile at bottom -->
@@ -510,6 +507,30 @@
                     <p class="text-sm mt-1" style="color: var(--color-gray-500);">{{ totalCompanies }} companies • {{ completedCompanies }} completed</p>
                 </div>
                 
+                <!-- Center: View Switcher -->
+                <div class="flex items-center bg-gray-100 rounded-lg p-1" style="background-color: var(--color-gray-100);">
+                    <button 
+                        @click="currentView = 'kanban'"
+                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentView === 'kanban' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
+                        :style="currentView === 'kanban' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+                        </svg>
+                        <span>Board</span>
+                    </button>
+                    <button 
+                        @click="currentView = 'table'"
+                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentView === 'table' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
+                        :style="currentView === 'table' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Table</span>
+                    </button>
+                </div>
+                
                 <!-- Right: Search and Sort -->
                 <div class="flex items-center space-x-2 lg:space-x-4 ml-4">
                     <!-- Search -->
@@ -518,16 +539,26 @@
                             type="text" 
                             placeholder="Search..." 
                             v-model="searchQuery"
-                            class="w-48 lg:w-64 xl:w-80 pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                            class="w-48 lg:w-64 xl:w-80 pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                             style="border-color: var(--color-gray-300);"
                         >
                         <svg class="w-4 h-4 absolute left-3 top-3" style="color: var(--color-gray-400);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
+                        <button 
+                            v-if="searchQuery"
+                            @click="clearSearch"
+                            class="absolute right-3 top-3 w-4 h-4 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors"
+                            style="color: var(--color-gray-400);"
+                        >
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
                     </div>
                     
                     <!-- Sort -->
-                    <div class="relative">
+                    <div class="relative sort-menu">
                         <button @click="showSortMenu = !showSortMenu" class="flex items-center space-x-1 lg:space-x-2 px-3 lg:px-4 py-2 rounded-lg border hover:bg-gray-50 transition-colors" style="border-color: var(--color-gray-300);">
                             <svg class="w-4 h-4" style="color: var(--color-gray-500);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
@@ -542,27 +573,41 @@
                         <!-- Sort Dropdown -->
                         <div v-if="showSortMenu" class="absolute right-0 top-12 w-48 bg-white rounded-lg border z-50" style="border-color: var(--color-gray-200); box-shadow: var(--shadow-theme-lg);">
                             <div class="p-2">
-                                <button @click="sortBy('name')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
+                                <button @click="sortBy('name'); showSortMenu = false" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
                                     Company Name
                                 </button>
-                                <button @click="sortBy('employees')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
+                                <button @click="sortBy('employees'); showSortMenu = false" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
                                     Employee Count
                                 </button>
-                                <button @click="sortBy('payroll')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
+                                <button @click="sortBy('payroll'); showSortMenu = false" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
                                     Monthly Payroll
                                 </button>
-                                <button @click="sortBy('lastUpdate')" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
+                                <button @click="sortBy('lastUpdate'); showSortMenu = false" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
                                     Last Updated
+                                </button>
+                                <button @click="sortBy('status'); showSortMenu = false" class="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-gray-50 transition-colors" style="color: var(--color-gray-700);">
+                                    Status
                                 </button>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Add Company Button -->
+                    <button 
+                        class="flex items-center space-x-2 px-4 py-2 text-sm rounded-lg text-white font-medium transition-all hover:scale-105"
+                        style="background: linear-gradient(135deg, var(--color-brand-500) 0%, #7a5af8 100%); box-shadow: var(--shadow-theme-sm);"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Add Company</span>
+                    </button>
                 </div>
             </div>
         </div>
         
         <!-- Kanban Board Area (Scrollable) - Full width with top margin -->
-        <div class="absolute top-0 left-16 right-0 bottom-0 pt-24 overflow-x-auto overflow-y-hidden kanban-scrollbar" style="background-color: var(--color-gray-50);">
+        <div v-show="currentView === 'kanban'" class="absolute top-0 left-16 right-0 bottom-0 pt-24 overflow-x-auto overflow-y-hidden kanban-scrollbar" style="background-color: var(--color-gray-50);">
             <div class="flex h-full min-w-max py-6 pl-6 pr-6 space-x-6">
                 <div 
                     v-for="(column, index) in columns" 
@@ -585,12 +630,12 @@
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-base" style="color: var(--color-gray-900);">{{ column.title }}</h3>
-                                    <p class="text-sm" style="color: var(--color-gray-500);">{{ getCompaniesByStage(column.id).length }} companies</p>
+                                    <p class="text-sm" style="color: var(--color-gray-500);">{{ getCompaniesByStage(column.id).length }} {{ getCompaniesByStage(column.id).length === 1 ? 'company' : 'companies' }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-3">
                                 <div 
-                                    v-if="column.id === 'processing'" 
+                                    v-if="column.id === 'processing' && getCompaniesByStage(column.id).length > 0" 
                                     class="w-10 h-10 rounded-full flex items-center justify-center"
                                     style="background-color: var(--color-brand-50);"
                                 >
@@ -601,11 +646,11 @@
                                     v-if="column.id !== 'processing' && column.aiActions.length > 0 && getCompaniesByStage(column.id).length > 0"
                                     @click="openAiModal(column.id)"
                                     class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:scale-105"
-                                    style="background-color: var(--color-brand-50); box-shadow: var(--shadow-theme-xs);"
-                                    onmouseover="this.style.backgroundColor='var(--color-brand-100)'"
-                                    onmouseout="this.style.backgroundColor='var(--color-brand-50)'"
+                                    style="background-color: var(--color-brand-100); box-shadow: var(--shadow-theme-xs);"
+                                    onmouseover="this.style.backgroundColor='var(--color-brand-200)'"
+                                    onmouseout="this.style.backgroundColor='var(--color-brand-100)'"
                                 >
-                                    <svg class="w-5 h-5" style="color: var(--color-brand-500);" fill="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-6 h-6" style="color: var(--color-brand-500);" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
                                     </svg>
                                 </button>
@@ -644,7 +689,7 @@
                             </div>
                         </div>
                         <div 
-                            v-for="company in getCompaniesByStage(column.id)" 
+                            v-for="company in getFilteredCompaniesByStage(column.id)" 
                             :key="company.id" 
                             :class="[
                                 'tailadmin-card pt-4 px-4 cursor-pointer card-hover transition-all duration-300',
@@ -712,6 +757,152 @@
             </div>
         </div>
 
+        <!-- Table View -->
+        <div v-show="currentView === 'table'" class="absolute top-0 left-16 right-0 bottom-0 pt-24 overflow-auto" style="background-color: var(--color-gray-50);">
+            <div class="h-full p-6">
+                <div class="bg-white rounded-lg tailadmin-card h-full overflow-hidden">
+                    <!-- Table Content -->
+                    <div class="overflow-auto h-full">
+                        <table class="w-full">
+                            <thead class="sticky top-0 bg-white border-b" style="border-color: var(--color-gray-200);">
+                                <tr class="h-16">
+                                    <th class="text-left px-6 py-4 font-medium text-sm" style="color: var(--color-gray-700);">
+                                        <div class="flex items-center space-x-2">
+                                            <input 
+                                                type="checkbox" 
+                                                class="rounded" 
+                                                style="color: var(--color-brand-500);"
+                                                :checked="allSelected"
+                                                @change="toggleSelectAll"
+                                            >
+                                            <span>Company</span>
+                                        </div>
+                                    </th>
+                                    <th class="text-left px-6 py-4 font-medium text-sm cursor-pointer hover:bg-gray-50" style="color: var(--color-gray-700);" @click="sortBy('employees')">
+                                        <div class="flex items-center space-x-1">
+                                            <span>Employees</span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    <th class="text-left px-6 py-4 font-medium text-sm cursor-pointer hover:bg-gray-50" style="color: var(--color-gray-700);" @click="sortBy('payroll')">
+                                        <div class="flex items-center space-x-1">
+                                            <span>Monthly Payroll</span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    <th class="text-left px-6 py-4 font-medium text-sm cursor-pointer hover:bg-gray-50" style="color: var(--color-gray-700);" @click="sortBy('status')">
+                                        <div class="flex items-center space-x-1">
+                                            <span>Status</span>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                            </svg>
+                                        </div>
+                                    </th>
+                                    <th class="text-left px-6 py-4 font-medium text-sm" style="color: var(--color-gray-700);">Contact</th>
+                                    <th class="text-right px-6 py-4 font-medium text-sm" style="color: var(--color-gray-700);">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y" style="divide-color: var(--color-gray-100);">
+                                <tr v-for="company in filteredCompanies" :key="company.id" class="hover:bg-gray-50 transition-colors cursor-pointer" @click="openCompanyModal(company)">
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center space-x-4">
+                                            <input 
+                                                type="checkbox" 
+                                                class="rounded" 
+                                                style="color: var(--color-brand-500);" 
+                                                :checked="selectedCompanies.includes(company.id)"
+                                                @change="toggleCompanySelection(company.id)"
+                                                @click.stop
+                                            >
+                                            <div class="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                                <img :src="company.logo" :alt="company.name" class="w-full h-full object-contain p-1">
+                                            </div>
+                                            <div>
+                                                <div class="font-medium text-sm" style="color: var(--color-gray-900);">{{ company.name }}</div>
+                                                <div class="text-sm" style="color: var(--color-gray-500);">{{ company.lastUpdate }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium" style="color: var(--color-gray-900);">{{ company.employees }}</div>
+                                        <div class="text-sm" style="color: var(--color-gray-500);">employees</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium" style="color: var(--color-gray-900);">{{ company.monthlyPayroll }}</div>
+                                        <div class="text-sm" style="color: var(--color-gray-500);">per month</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="relative status-menu">
+                                            <button 
+                                                @click.stop="toggleStatusMenu(company.id)"
+                                                class="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-50"
+                                                :style="getColumnStyle(getColumnById(company.stage))"
+                                            >
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" v-html="getColumnIcon(company.stage)"></svg>
+                                                <span>{{ getColumnById(company.stage)?.title }}</span>
+                                                <svg class="w-4 h-4" style="color: currentColor;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div v-if="activeStatusMenu === company.id" class="absolute left-0 top-12 bg-white rounded-lg shadow-lg border z-10 min-w-48" style="border-color: var(--color-gray-200);">
+                                                <button 
+                                                    v-for="column in columns" 
+                                                    :key="column.id"
+                                                    @click.stop="updateCompanyStage(company.id, column.id); activeStatusMenu = null"
+                                                    class="w-full text-left px-4 py-3 flex items-center space-x-3 hover:bg-gray-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                                                >
+                                                    <div class="w-6 h-6 rounded flex items-center justify-center" :style="getColumnStyle(column)">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" v-html="getColumnIcon(column.id)"></svg>
+                                                    </div>
+                                                    <span class="text-sm font-medium" style="color: var(--color-gray-900);">{{ column.title }}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-medium" style="color: var(--color-gray-900);">{{ company.contact }}</div>
+                                        <div class="text-sm" style="color: var(--color-gray-500);">{{ company.email }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end space-x-2">
+                                            <button 
+                                                @click.stop="openAiModal(getColumnById(company.stage)?.id)"
+                                                class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                                title="AI Assistant"
+                                            >
+                                                <svg class="w-4 h-4" style="color: var(--color-brand-500);" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
+                                                </svg>
+                                            </button>
+                                            <div class="relative row-menu">
+                                                <button 
+                                                    @click.stop="toggleRowMenu(company.id)"
+                                                    class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                                >
+                                                    <svg class="w-4 h-4" style="color: var(--color-gray-400);" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                                    </svg>
+                                                </button>
+                                                <div v-if="activeRowMenu === company.id" class="absolute right-0 top-10 bg-white rounded-lg shadow-lg border z-10 min-w-32" style="border-color: var(--color-gray-200);">
+                                                    <button @click.stop="editCompany(company.id)" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 rounded-t-lg">Edit</button>
+                                                    <button @click.stop="duplicateCompany(company.id)" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">Duplicate</button>
+                                                    <button @click.stop="deleteCompany(company.id)" class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 rounded-b-lg text-red-600">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- AI Chat Modal -->
         <div v-if="showAIModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
             <div class="tailadmin-modal max-w-md w-full m-4 p-0 overflow-hidden">
@@ -720,7 +911,7 @@
                     <div class="flex items-center justify-between p-6">
                         <div class="flex items-center space-x-4">
                             <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm p-2">
-                                <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain">
+                                <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain filter brightness-0 invert">
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-white">Petria</h3>
@@ -746,7 +937,7 @@
                     <!-- Petria's Message -->
                     <div class="flex items-start space-x-3 mb-4">
                         <div class="w-8 h-8 brand-gradient rounded-full flex items-center justify-center flex-shrink-0 p-1.5">
-                            <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain">
+                            <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain filter brightness-0 invert">
                         </div>
                         <div class="flex-1">
                             <div class="bg-white p-4 rounded-lg rounded-tl-sm" style="box-shadow: var(--shadow-theme-sm);">
@@ -854,7 +1045,7 @@
                                     <!-- Petria's Summary Message -->
                                     <div class="flex items-start space-x-3">
                                         <div class="w-8 h-8 brand-gradient rounded-full flex items-center justify-center flex-shrink-0 p-1.5">
-                                            <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain">
+                                            <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain filter brightness-0 invert">
                                         </div>
                                         <div class="flex-1">
                                             <div class="bg-white p-4 rounded-lg rounded-tl-sm max-w-2xl" style="box-shadow: var(--shadow-theme-sm);">
@@ -868,7 +1059,7 @@
                                     <!-- User Chat Messages -->
                                     <div v-for="message in chatMessages" :key="message.id" class="flex" :class="message.from === 'user' ? 'justify-end' : 'items-start space-x-3'">
                                         <div v-if="message.from === 'petria'" class="w-8 h-8 brand-gradient rounded-full flex items-center justify-center flex-shrink-0 p-1.5">
-                                            <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain">
+                                            <img src="images/logos/petria.svg" alt="Petria" class="w-full h-full object-contain filter brightness-0 invert">
                                         </div>
                                         <div class="flex-1 max-w-2xl" :class="message.from === 'user' ? 'flex justify-end' : ''">
                                             <div>
@@ -1143,20 +1334,24 @@
 
         createApp({
             setup() {
+                // View state
+                const currentView = ref('kanban');
+                const currentPage = ref('payroll');
+                
                 // Companies data
                 const companies = ref([
                     { id: 1, name: "Acme Corp", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "John Smith", email: "john@acme.com", logo: "images/logos/logoipsum-214.svg" },
-                    { id: 2, name: "Bright Solutions", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£78k", contact: "Sarah Jones", email: "sarah@bright.com", logo: "images/logos/logoipsum-223.svg" },
-                    { id: 3, name: "Creative Minds", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Mike Wilson", email: "mike@creative.com", logo: "images/logos/logoipsum-224.svg" },
-                    { id: 4, name: "Dynamic Enterprises", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 156, monthlyPayroll: "£445k", contact: "Lisa Brown", email: "lisa@dynamic.com", logo: "images/logos/logoipsum-225.svg" },
-                    { id: 5, name: "Elite Manufacturing", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Tom Davis", email: "tom@elite.com", logo: "images/logos/logoipsum-226.svg" },
-                    { id: 6, name: "Future Tech", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£98k", contact: "Emma Taylor", email: "emma@future.com", logo: "images/logos/logoipsum-227.svg" },
-                    { id: 7, name: "Global Ventures", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "David Lee", email: "david@global.com", logo: "images/logos/logoipsum-236.svg" },
+                    { id: 2, name: "Bright Solutions", stage: "awaiting-info", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£78k", contact: "Sarah Jones", email: "sarah@bright.com", logo: "images/logos/logoipsum-223.svg" },
+                    { id: 3, name: "Creative Minds", stage: "changes-needed", lastUpdate: "3 hours ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Mike Wilson", email: "mike@creative.com", logo: "images/logos/logoipsum-224.svg" },
+                    { id: 4, name: "Dynamic Enterprises", stage: "ready-to-process", lastUpdate: "1 hour ago", notes: "", employees: 156, monthlyPayroll: "£445k", contact: "Lisa Brown", email: "lisa@dynamic.com", logo: "images/logos/logoipsum-225.svg" },
+                    { id: 5, name: "Elite Manufacturing", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Tom Davis", email: "tom@elite.com", logo: "images/logos/logoipsum-226.svg" },
+                    { id: 6, name: "Future Tech", stage: "processing", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£98k", contact: "Emma Taylor", email: "emma@future.com", logo: "images/logos/logoipsum-227.svg" },
+                    { id: 7, name: "Global Ventures", stage: "complete", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "David Lee", email: "david@global.com", logo: "images/logos/logoipsum-236.svg" },
                     { id: 8, name: "Horizon Industries", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "Anna White", email: "anna@horizon.com", logo: "images/logos/logoipsum-242.svg" },
-                    { id: 9, name: "Innovation Labs", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£145k", contact: "Chris Green", email: "chris@innovation.com", logo: "images/logos/logoipsum-245.svg" },
-                    { id: 10, name: "Jupiter Consulting", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£67k", contact: "Rachel Black", email: "rachel@jupiter.com", logo: "images/logos/logoipsum-248.svg" },
-                    { id: 11, name: "Keystone Partners", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 67, monthlyPayroll: "£178k", contact: "James Carter", email: "james@keystone.com", logo: "images/logos/logoipsum-249.svg" },
-                    { id: 12, name: "Landmark Services", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 34, monthlyPayroll: "£89k", contact: "Sophie Turner", email: "sophie@landmark.com", logo: "images/logos/logoipsum-252.svg" },
+                    { id: 9, name: "Innovation Labs", stage: "awaiting-info", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£145k", contact: "Chris Green", email: "chris@innovation.com", logo: "images/logos/logoipsum-245.svg" },
+                    { id: 10, name: "Jupiter Consulting", stage: "changes-needed", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£67k", contact: "Rachel Black", email: "rachel@jupiter.com", logo: "images/logos/logoipsum-248.svg" },
+                    { id: 11, name: "Keystone Partners", stage: "ready-to-process", lastUpdate: "4 hours ago", notes: "", employees: 67, monthlyPayroll: "£178k", contact: "James Carter", email: "james@keystone.com", logo: "images/logos/logoipsum-249.svg" },
+                    { id: 12, name: "Landmark Services", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 34, monthlyPayroll: "£89k", contact: "Sophie Turner", email: "sophie@landmark.com", logo: "images/logos/logoipsum-252.svg" },
                     { id: 13, name: "Metro Solutions", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£123k", contact: "Alex Morgan", email: "alex@metro.com", logo: "images/logos/logoipsum-257.svg" },
                     { id: 14, name: "NextGen Analytics", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 78, monthlyPayroll: "£201k", contact: "Kelly Adams", email: "kelly@nextgen.com", logo: "images/logos/logoipsum-261.svg" },
                     { id: 15, name: "Oceanic Holdings", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 123, monthlyPayroll: "£334k", contact: "Ryan Cooper", email: "ryan@oceanic.com", logo: "images/logos/logoipsum-291.svg" },
@@ -1268,6 +1463,9 @@
                 const chatInput = ref('');
                 const companyNotes = ref('');
                 const activeTaskMenu = ref(null);
+                const activeRowMenu = ref(null);
+                const activeStatusMenu = ref(null);
+                const selectedCompanies = ref([]);
                 const modalTabs = ref([
                     { id: 'ai', name: 'Petria AI' },
                     { id: 'notes', name: 'Notes' },
@@ -1282,6 +1480,26 @@
                 const lastEditTime = ref(new Date());
                 const autoSaveTime = ref(new Date());
 
+                // Click outside handling
+                const handleClickOutside = (event) => {
+                    const sortMenu = event.target.closest('.sort-menu');
+                    const rowMenu = event.target.closest('.row-menu');
+                    const statusMenu = event.target.closest('.status-menu');
+                    
+                    if (!sortMenu) {
+                        showSortMenu.value = false;
+                    }
+                    if (!rowMenu) {
+                        activeRowMenu.value = null;
+                    }
+                    if (!statusMenu) {
+                        activeStatusMenu.value = null;
+                    }
+                };
+
+                // Add event listener for click outside
+                document.addEventListener('click', handleClickOutside);
+
                 // Computed properties
                 const totalCompanies = computed(() => companies.value.length);
                 const completedCompanies = computed(() => companies.value.filter(c => c.stage === 'complete').length);
@@ -1290,6 +1508,10 @@
                 // Methods
                 const getCompaniesByStage = (stage) => {
                     return companies.value.filter(company => company.stage === stage);
+                };
+
+                const getFilteredCompaniesByStage = (stage) => {
+                    return filteredCompanies.value.filter(company => company.stage === stage);
                 };
 
                 const getCurrentColumn = () => {
@@ -1963,13 +2185,118 @@ Start typing your notes here...`;
                                 // Simple time-based sorting (newest first)
                                 const timeOrder = { 'just now': 0, '1 hour ago': 1, '2 hours ago': 2, '3 hours ago': 3, '4 hours ago': 4 };
                                 return (timeOrder[a.lastUpdate] || 5) - (timeOrder[b.lastUpdate] || 5);
+                            case 'status':
+                                const stageOrder = {
+                                    'to-contact': 0,
+                                    'awaiting-info': 1,
+                                    'changes-needed': 2,
+                                    'ready-to-process': 3,
+                                    'client-approved': 4,
+                                    'processing': 5,
+                                    'complete': 6
+                                };
+                                return (stageOrder[a.stage] || 0) - (stageOrder[b.stage] || 0);
                             default:
                                 return 0;
                         }
                     });
                 };
 
+                // Table view functions
+                const toggleRowMenu = (companyId) => {
+                    activeRowMenu.value = activeRowMenu.value === companyId ? null : companyId;
+                };
+
+                const toggleStatusMenu = (companyId) => {
+                    activeStatusMenu.value = activeStatusMenu.value === companyId ? null : companyId;
+                };
+
+                const updateCompanyStage = (companyId, newStage) => {
+                    const company = companies.value.find(c => c.id === companyId);
+                    if (company) {
+                        company.stage = newStage;
+                        company.lastUpdate = 'Just now';
+                    }
+                };
+
+                const getColumnById = (columnId) => {
+                    return columns.value.find(col => col.id === columnId);
+                };
+
+                const editCompany = (companyId) => {
+                    const company = companies.value.find(c => c.id === companyId);
+                    if (company) {
+                        openCompanyModal(company);
+                    }
+                    activeRowMenu.value = null;
+                };
+
+                const duplicateCompany = (companyId) => {
+                    const company = companies.value.find(c => c.id === companyId);
+                    if (company) {
+                        const newCompany = {
+                            ...company,
+                            id: Date.now(),
+                            name: company.name + ' (Copy)',
+                            stage: 'to-contact',
+                            lastUpdate: 'Just now'
+                        };
+                        companies.value.push(newCompany);
+                    }
+                    activeRowMenu.value = null;
+                };
+
+                const deleteCompany = (companyId) => {
+                    const index = companies.value.findIndex(c => c.id === companyId);
+                    if (index > -1) {
+                        companies.value.splice(index, 1);
+                    }
+                    activeRowMenu.value = null;
+                };
+
+                // Filtered companies for both views
+                const filteredCompanies = computed(() => {
+                    if (!searchQuery.value) return companies.value;
+                    const query = searchQuery.value.toLowerCase();
+                    return companies.value.filter(company => 
+                        company.name.toLowerCase().includes(query) ||
+                        company.contact.toLowerCase().includes(query) ||
+                        company.email.toLowerCase().includes(query)
+                    );
+                });
+
+                const clearSearch = () => {
+                    searchQuery.value = '';
+                };
+
+                // Selection management
+                const allSelected = computed(() => {
+                    return filteredCompanies.value.length > 0 && 
+                           selectedCompanies.value.length === filteredCompanies.value.length;
+                });
+
+                const toggleSelectAll = () => {
+                    if (allSelected.value) {
+                        selectedCompanies.value = [];
+                    } else {
+                        selectedCompanies.value = filteredCompanies.value.map(c => c.id);
+                    }
+                };
+
+                const toggleCompanySelection = (companyId) => {
+                    const index = selectedCompanies.value.indexOf(companyId);
+                    if (index > -1) {
+                        selectedCompanies.value.splice(index, 1);
+                    } else {
+                        selectedCompanies.value.push(companyId);
+                    }
+                };
+
                 return {
+                    // View state
+                    currentView,
+                    currentPage,
+                    // Data
                     companies,
                     columns,
                     searchQuery,
@@ -1988,6 +2315,9 @@ Start typing your notes here...`;
                     chatInput,
                     companyNotes,
                     activeTaskMenu,
+                    activeRowMenu,
+                    activeStatusMenu,
+                    selectedCompanies,
                     modalTabs,
                     // Document editor state
                     documentTitle,
@@ -2000,8 +2330,11 @@ Start typing your notes here...`;
                     totalCompanies,
                     completedCompanies,
                     pendingCompanies,
+                    filteredCompanies,
+                    allSelected,
                     // Methods
                     getCompaniesByStage,
+                    getFilteredCompaniesByStage,
                     getCurrentColumn,
                     getCurrentStageTitle,
                     getNotesArray,
@@ -2040,7 +2373,18 @@ Start typing your notes here...`;
                     onDragLeave,
                     onDrop,
                     // Sort methods
-                    sortBy
+                    sortBy,
+                    // Table view methods
+                    toggleRowMenu,
+                    toggleStatusMenu,
+                    updateCompanyStage,
+                    getColumnById,
+                    editCompany,
+                    duplicateCompany,
+                    deleteCompany,
+                    clearSearch,
+                    toggleSelectAll,
+                    toggleCompanySelection
                 };
             }
         }).mount('#app');
