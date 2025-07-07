@@ -609,13 +609,266 @@
         <!-- Kanban Board Area (Scrollable) - Full width with top margin -->
         <div v-show="currentView === 'kanban'" class="absolute top-0 left-16 right-0 bottom-0 pt-24 overflow-x-auto overflow-y-hidden kanban-scrollbar" style="background-color: var(--color-gray-50);">
             <div class="flex h-full min-w-max py-6 pl-6 pr-6 space-x-6">
+                <!-- To Contact Column -->
                 <div 
-                    v-for="(column, index) in columns" 
+                    :data-column-id="columns[0].id"
+                    class="tailadmin-card flex flex-col transition-all duration-300 drop-zone min-w-[300px]"
+                    style="height: 100%; border-top-right-radius: 0; border-bottom-right-radius: 0; border-right: none;"
+                    @dragover.prevent="onDragOver($event, columns[0].id)"
+                    @dragleave="onDragLeave($event, columns[0].id)"
+                    @drop="onDrop($event, columns[0].id)"
+                >
+                    <div :class="['column-header', getCompaniesByStage(columns[0].id).length > 0 ? 'has-content' : '']">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center" :style="getColumnStyle(columns[0])">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" v-html="getColumnIcon(columns[0].id)"></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-base" style="color: var(--color-gray-900);">{{ columns[0].title }}</h3>
+                                    <p class="text-sm" style="color: var(--color-gray-500);">{{ getCompaniesByStage(columns[0].id).length }} {{ getCompaniesByStage(columns[0].id).length === 1 ? 'company' : 'companies' }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <button 
+                                    v-if="columns[0].aiActions.length > 0 && getCompaniesByStage(columns[0].id).length > 0"
+                                    @click="openAiModal(columns[0].id)"
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:scale-105"
+                                    style="background-color: var(--color-brand-100); box-shadow: var(--shadow-theme-xs);"
+                                    onmouseover="this.style.backgroundColor='var(--color-brand-200)'"
+                                    onmouseout="this.style.backgroundColor='var(--color-brand-100)'"
+                                >
+                                    <svg class="w-6 h-6" style="color: var(--color-brand-500);" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div 
+                        class="flex-1 p-6 space-y-4 column-scroll"
+                        style="height: calc(100% - 80px); overflow-y: auto;"
+                    >
+                        <div v-if="getCompaniesByStage(columns[0].id).length === 0" class="text-center py-4 mb-4">
+                            <p class="text-sm" style="color: var(--color-gray-400);">Drop companies here</p>
+                        </div>
+                        
+                        <div v-if="getCompaniesByStage(columns[0].id).length === 0" class="space-y-4">
+                            <div 
+                                v-for="n in 3" 
+                                :key="'ghost-' + n"
+                                class="tailadmin-card pt-4 px-4 opacity-20 pointer-events-none"
+                            >
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                    </div>
+                                    <div class="h-6 w-16 bg-gray-200 rounded"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-sm mb-3">
+                                    <div class="h-3 bg-gray-200 rounded w-20"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-12"></div>
+                                </div>
+                                <div class="h-8 bg-gray-100 rounded"></div>
+                            </div>
+                        </div>
+                        <div 
+                            v-for="company in getFilteredCompaniesByStage(columns[0].id)" 
+                            :key="company.id" 
+                            :class="[
+                                'tailadmin-card pt-4 px-4 cursor-pointer card-hover transition-all duration-300',
+                                company.isExiting ? 'card-exit-animation' : ''
+                            ]"
+                            draggable="true"
+                            @dragstart="onDragStart($event, company)"
+                            @click="openCompanyModal(company)"
+                        >
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center p-1">
+                                    <img :src="company.logo" :alt="company.name" class="w-full h-full object-contain">
+                                </div>
+                                <h4 class="font-semibold text-base leading-tight" style="color: var(--color-gray-900);">{{ company.name }}</h4>
+                            </div>
+                            
+                            <div v-if="company.stage !== 'to-contact'" class="text-sm mb-3" style="color: var(--color-gray-500);">{{ company.lastUpdate }}</div>
+                            
+                            <div class="flex justify-between items-center text-sm mb-3" style="color: var(--color-gray-600);">
+                                <span>{{ company.employees }} employees</span>
+                                <span class="font-semibold">{{ company.monthlyPayroll }}</span>
+                            </div>
+                            
+                            <div 
+                                v-if="company.notes" 
+                                class="p-3 rounded-lg text-sm whitespace-pre-line"
+                                style="background-color: var(--color-gray-50); color: var(--color-gray-700);"
+                            >
+                                {{ company.notes }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Awaiting Info Column (joined with Contact) -->
+                <div 
+                    :data-column-id="columns[1].id"
+                    class="tailadmin-card flex flex-col transition-all duration-300 drop-zone min-w-[300px]"
+                    style="height: 100%; border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: 1px solid var(--color-gray-300);"
+                    @dragover.prevent="onDragOver($event, columns[1].id)"
+                    @dragleave="onDragLeave($event, columns[1].id)"
+                    @drop="onDrop($event, columns[1].id)"
+                >
+                    <div :class="['column-header', getCompaniesByStage(columns[1].id).length > 0 ? 'has-content' : '']">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center" :style="getColumnStyle(columns[1])">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" v-html="getColumnIcon(columns[1].id)"></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-base" style="color: var(--color-gray-900);">{{ columns[1].title }}</h3>
+                                    <p class="text-sm" style="color: var(--color-gray-500);">{{ getCompaniesByStage(columns[1].id).length }} {{ getCompaniesByStage(columns[1].id).length === 1 ? 'company' : 'companies' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div 
+                        class="flex-1 p-6 space-y-4 column-scroll"
+                        style="height: calc(100% - 80px); overflow-y: auto;"
+                    >
+                        <div v-if="getCompaniesByStage(columns[1].id).length === 0" class="text-center py-4 mb-4">
+                            <p class="text-sm" style="color: var(--color-gray-400);">Drop companies here</p>
+                        </div>
+                        
+                        <div v-if="getCompaniesByStage(columns[1].id).length === 0" class="space-y-4">
+                            <div 
+                                v-for="n in 3" 
+                                :key="'ghost-' + n"
+                                class="tailadmin-card pt-4 px-4 opacity-20 pointer-events-none"
+                            >
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center"></div>
+                                        <div class="h-4 bg-gray-200 rounded w-24"></div>
+                                    </div>
+                                    <div class="h-6 w-16 bg-gray-200 rounded"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-sm mb-3">
+                                    <div class="h-3 bg-gray-200 rounded w-20"></div>
+                                    <div class="h-3 bg-gray-200 rounded w-12"></div>
+                                </div>
+                                <div class="h-8 bg-gray-100 rounded"></div>
+                            </div>
+                        </div>
+                        <div 
+                            v-for="company in getFilteredCompaniesByStage(columns[1].id)" 
+                            :key="company.id" 
+                            :class="[
+                                'tailadmin-card pt-4 px-4 cursor-pointer card-hover transition-all duration-300',
+                                company.isExiting ? 'card-exit-animation' : ''
+                            ]"
+                            draggable="true"
+                            @dragstart="onDragStart($event, company)"
+                            @click="openCompanyModal(company)"
+                        >
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center p-1">
+                                    <img :src="company.logo" :alt="company.name" class="w-full h-full object-contain">
+                                </div>
+                                <h4 class="font-semibold text-base leading-tight" style="color: var(--color-gray-900);">{{ company.name }}</h4>
+                            </div>
+                            
+                            <div v-if="company.stage !== 'to-contact'" class="text-sm mb-3" style="color: var(--color-gray-500);">{{ company.lastUpdate }}</div>
+                            
+                            <div class="flex justify-between items-center text-sm mb-3" style="color: var(--color-gray-600);">
+                                <span>{{ company.employees }} employees</span>
+                                <span class="font-semibold">{{ company.monthlyPayroll }}</span>
+                            </div>
+                            
+                            <div 
+                                v-if="company.notes" 
+                                class="p-3 rounded-lg text-sm whitespace-pre-line"
+                                style="background-color: var(--color-gray-50); color: var(--color-gray-700);"
+                            >
+                                {{ company.notes }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Changes Needed Column with Sub-columns -->
+                <div 
+                    :data-column-id="columns[2].id"
+                    class="tailadmin-card flex flex-col transition-all duration-300 drop-zone min-w-[300px]"
+                    style="height: 100%;"
+                    @dragover.prevent="onDragOver($event, columns[2].id)"
+                    @dragleave="onDragLeave($event, columns[2].id)"
+                    @drop="onDrop($event, columns[2].id)"
+                >
+                    <div :class="['column-header', getCompaniesByStage(columns[2].id).length > 0 ? 'has-content' : '']">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center" :style="getColumnStyle(columns[2])">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" v-html="getColumnIcon(columns[2].id)"></svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-base" style="color: var(--color-gray-900);">{{ columns[2].title }}</h3>
+                                    <p class="text-sm" style="color: var(--color-gray-500);">{{ getCompaniesByStage(columns[2].id).length }} {{ getCompaniesByStage(columns[2].id).length === 1 ? 'company' : 'companies' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 flex flex-col overflow-hidden">
+                        <div class="flex-1 overflow-y-auto column-scroll">
+                            <!-- Sub-columns for Changes Needed -->
+                            <div v-for="(subColumn, subIndex) in columns[2].subColumns" :key="subColumn.id" 
+                                 class="border-b border-gray-200 last:border-b-0" 
+                                 style="min-height: 200px; max-height: 25%;">
+                                <div class="p-4 bg-gray-50 border-b border-gray-100">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded flex items-center justify-center" :style="getSubColumnStyle(subColumn)">
+                                            <div class="w-2 h-2 rounded-full bg-white"></div>
+                                        </div>
+                                        <h4 class="font-medium text-sm" style="color: var(--color-gray-900);">{{ subColumn.title }}</h4>
+                                        <span class="text-xs text-gray-500">({{ getCompaniesBySubStage(subColumn.id).length }})</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 space-y-2 overflow-y-auto" style="height: calc(100% - 60px);">
+                                    <div v-if="getCompaniesBySubStage(subColumn.id).length === 0" class="text-center py-2">
+                                        <p class="text-xs" style="color: var(--color-gray-400);">No items</p>
+                                    </div>
+                                    <div 
+                                        v-for="company in getCompaniesBySubStage(subColumn.id)" 
+                                        :key="company.id" 
+                                        class="bg-white p-2 rounded border cursor-pointer hover:shadow-sm transition-all text-xs"
+                                        draggable="true"
+                                        @dragstart="onDragStart($event, company)"
+                                        @click="openCompanyModal(company)"
+                                    >
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-4 h-4 rounded bg-gray-100 flex items-center justify-center p-0.5">
+                                                <img :src="company.logo" :alt="company.name" class="w-full h-full object-contain">
+                                            </div>
+                                            <span class="font-medium text-gray-900 truncate">{{ company.name }}</span>
+                                        </div>
+                                        <div class="mt-1 text-gray-500">{{ company.monthlyPayroll }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remaining Columns -->
+                <div 
+                    v-for="(column, index) in columns.slice(3)" 
                     :key="column.id"
                     :data-column-id="column.id"
                     :class="[
                         'tailadmin-card flex flex-col transition-all duration-300 drop-zone min-w-[300px]',
-                        index === columns.length - 1 ? 'mr-6' : ''
+                        index === columns.slice(3).length - 1 ? 'mr-6' : ''
                     ]"
                     style="height: 100%;"
                     @dragover.prevent="onDragOver($event, column.id)"
@@ -633,153 +886,17 @@
                                     <p class="text-sm" style="color: var(--color-gray-500);">{{ getCompaniesByStage(column.id).length }} {{ getCompaniesByStage(column.id).length === 1 ? 'company' : 'companies' }}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center space-x-3">
-                                <div 
-                                    v-if="column.id === 'processing' && getCompaniesByStage(column.id).length > 0" 
-                                    class="w-10 h-10 rounded-full flex items-center justify-center"
-                                    style="background-color: var(--color-brand-50);"
-                                >
-                                    <div class="w-6 h-6 border-2 border-t-transparent rounded-full processing-column-spinner" style="border-color: var(--color-brand-500);"></div>
-                                </div>
-                                
-                                <button 
-                                    v-if="column.id !== 'processing' && column.id !== 'changes-needed' && column.aiActions.length > 0 && getCompaniesByStage(column.id).length > 0"
-                                    @click="openAiModal(column.id)"
-                                    class="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:scale-105"
-                                    style="background-color: var(--color-brand-100); box-shadow: var(--shadow-theme-xs);"
-                                    onmouseover="this.style.backgroundColor='var(--color-brand-200)'"
-                                    onmouseout="this.style.backgroundColor='var(--color-brand-100)'"
-                                >
-                                    <svg class="w-6 h-6" style="color: var(--color-brand-500);" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
-                                    </svg>
-                                </button>
-                            </div>
                         </div>
                     </div>
                     
-                    <div v-if="column.id === 'changes-needed' && column.subColumns" class="flex-1 flex flex-col overflow-hidden">
-                        <div class="flex-1 overflow-y-auto column-scroll">
-                            <!-- Sub-columns for Changes Needed -->
-                            <div v-for="(subColumn, subIndex) in column.subColumns" :key="subColumn.id" 
-                                 class="border-b border-gray-200 last:border-b-0" 
-                                 style="min-height: 200px;">
-                                <div class="p-4 bg-gray-50 border-b border-gray-100">
-                                    <div class="flex items-center justify-between">
-                                        <div class="flex items-center space-x-2">
-                                            <div class="w-6 h-6 rounded flex items-center justify-center" :style="getSubColumnStyle(subColumn)">
-                                                <div class="w-2 h-2 rounded-full bg-white"></div>
-                                            </div>
-                                            <h4 class="font-medium text-sm" style="color: var(--color-gray-900);">{{ subColumn.title }}</h4>
-                                            <span class="text-xs text-gray-500">({{ getCompaniesBySubStage(subColumn.id).length }})</span>
-                                        </div>
-                                        <button 
-                                            v-if="(subColumn.id === 'new-starters' || subColumn.id === 'payslip-changes') && getCompaniesBySubStage(subColumn.id).length > 0"
-                                            @click="openAiModal(subColumn.id)"
-                                            class="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-105"
-                                            style="background-color: var(--color-brand-100); box-shadow: var(--shadow-theme-xs);"
-                                            onmouseover="this.style.backgroundColor='var(--color-brand-200)'"
-                                            onmouseout="this.style.backgroundColor='var(--color-brand-100)'"
-                                        >
-                                            <svg class="w-4 h-4" style="color: var(--color-brand-500);" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423L19.5 18.75l-1.183.394a2.25 2.25 0 00-1.423 1.423z"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="p-3 space-y-2">
-                                    <div v-if="getCompaniesBySubStage(subColumn.id).length === 0" class="text-center py-2">
-                                        <p class="text-xs" style="color: var(--color-gray-400);">Drop companies here</p>
-                                        <!-- Ghost Cards for Empty Sub-columns -->
-                                        <div class="space-y-2 mt-2">
-                                            <div 
-                                                v-for="n in 2" 
-                                                :key="'ghost-' + n"
-                                                class="bg-white p-2 rounded border opacity-20 pointer-events-none"
-                                            >
-                                                <div class="flex items-center space-x-2">
-                                                    <div class="w-4 h-4 rounded bg-gray-200"></div>
-                                                    <div class="h-3 bg-gray-200 rounded w-20"></div>
-                                                </div>
-                                                <div class="mt-1 h-2 bg-gray-200 rounded w-12"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div 
-                                        v-for="company in getCompaniesBySubStage(subColumn.id)" 
-                                        :key="company.id" 
-                                        :class="[
-                                            'tailadmin-card pt-4 px-4 cursor-pointer card-hover transition-all duration-300',
-                                            company.stage === 'processing' ? 'processing-card' : '',
-                                            company.isExiting ? 'card-exit-animation' : ''
-                                        ]"
-                                        draggable="true"
-                                        @dragstart="onDragStart($event, company)"
-                                        @click="openCompanyModal(company)"
-                                    >
-                                        <!-- Company Header -->
-                                        <div class="flex items-center space-x-3 mb-3">
-                                            <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center p-1">
-                                                <img :src="company.logo" :alt="company.name" class="w-full h-full object-contain">
-                                            </div>
-                                            <h4 class="font-semibold text-base leading-tight" style="color: var(--color-gray-900);">{{ company.name }}</h4>
-                                        </div>
-                                        
-                                        <!-- Signed Off Status -->
-                                        <div v-if="['client-approved', 'processing'].includes(company.stage)" class="flex items-center justify-center mb-3">
-                                            <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full" style="background-color: var(--color-success-50);">
-                                                <div 
-                                                    v-if="company.stage === 'client-approved'" 
-                                                    class="w-4 h-4 rounded-full flex items-center justify-center"
-                                                    style="background-color: var(--color-success-500);"
-                                                >
-                                                    <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <div 
-                                                    v-if="company.stage === 'complete'" 
-                                                    class="w-4 h-4 rounded-full flex items-center justify-center brand-gradient"
-                                                >
-                                                    <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <span class="text-xs font-medium" style="color: var(--color-success-700);">Signed Off</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <div v-if="company.stage !== 'to-contact'" class="text-sm mb-3" style="color: var(--color-gray-500);">{{ company.lastUpdate }}</div>
-                                        
-                                        <div class="flex justify-between items-center text-sm mb-3" style="color: var(--color-gray-600);">
-                                            <span>{{ company.employees }} employees</span>
-                                            <span class="font-semibold">{{ company.monthlyPayroll }}</span>
-                                        </div>
-                                        
-                                        <div 
-                                            v-if="company.notes" 
-                                            class="p-3 rounded-lg text-sm whitespace-pre-line"
-                                            style="background-color: var(--color-gray-50); color: var(--color-gray-700);"
-                                        >
-                                            {{ company.notes }}
-                                        </div>
-                                        
-                                        <div v-if="company.processing" class="flex items-center space-x-2 mt-3">
-                                            <div class="w-2 h-2 rounded-full processing-dots" style="background-color: var(--color-brand-500);"></div>
-                                            <span class="text-sm font-medium" style="color: var(--color-brand-500);">Processing...</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else class="flex-1 p-6 space-y-4 column-scroll" style="height: calc(100% - 80px); overflow-y: auto;">
-                        <!-- Real Company Cards -->
+                    <div 
+                        class="flex-1 p-6 space-y-4 column-scroll"
+                        style="height: calc(100% - 80px); overflow-y: auto;"
+                    >
                         <div v-if="getCompaniesByStage(column.id).length === 0" class="text-center py-4 mb-4">
                             <p class="text-sm" style="color: var(--color-gray-400);">Drop companies here</p>
                         </div>
                         
-                        <!-- Ghost Cards for Empty Columns -->
                         <div v-if="getCompaniesByStage(column.id).length === 0" class="space-y-4">
                             <div 
                                 v-for="n in 3" 
@@ -805,14 +922,12 @@
                             :key="company.id" 
                             :class="[
                                 'tailadmin-card pt-4 px-4 cursor-pointer card-hover transition-all duration-300',
-                                company.stage === 'processing' ? 'processing-card' : '',
                                 company.isExiting ? 'card-exit-animation' : ''
                             ]"
                             draggable="true"
                             @dragstart="onDragStart($event, company)"
                             @click="openCompanyModal(company)"
                         >
-                            <!-- Company Header -->
                             <div class="flex items-center space-x-3 mb-3">
                                 <div class="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center p-1">
                                     <img :src="company.logo" :alt="company.name" class="w-full h-full object-contain">
@@ -820,11 +935,10 @@
                                 <h4 class="font-semibold text-base leading-tight" style="color: var(--color-gray-900);">{{ company.name }}</h4>
                             </div>
                             
-                            <!-- Signed Off Status -->
-                            <div v-if="['client-approved', 'processing'].includes(company.stage)" class="flex items-center justify-center mb-3">
+                            <div v-if="['ready-for-processing', 'payrollcomplete'].includes(company.stage)" class="flex items-center justify-center mb-3">
                                 <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full" style="background-color: var(--color-success-50);">
                                     <div 
-                                        v-if="company.stage === 'client-approved'" 
+                                        v-if="column.id === 'ready-for-processing'" 
                                         class="w-4 h-4 rounded-full flex items-center justify-center"
                                         style="background-color: var(--color-success-500);"
                                     >
@@ -833,7 +947,7 @@
                                         </svg>
                                     </div>
                                     <div 
-                                        v-if="company.stage === 'complete'" 
+                                        v-if="column.id === 'payrollcomplete'" 
                                         class="w-4 h-4 rounded-full flex items-center justify-center brand-gradient"
                                     >
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -857,11 +971,6 @@
                                 style="background-color: var(--color-gray-50); color: var(--color-gray-700);"
                             >
                                 {{ company.notes }}
-                            </div>
-                            
-                            <div v-if="company.processing" class="flex items-center space-x-2 mt-3">
-                                <div class="w-2 h-2 rounded-full processing-dots" style="background-color: var(--color-brand-500);"></div>
-                                <span class="text-sm font-medium" style="color: var(--color-brand-500);">Processing...</span>
                             </div>
                         </div>
                     </div>
@@ -1435,8 +1544,6 @@
                     </div>
                 </div>
             </div>
-                </div>
-            </div>
         </div>
 
     </div>
@@ -1455,15 +1562,15 @@
                     { id: 1, name: "Acme Corp", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "John Smith", email: "john@acme.com", logo: "images/logos/logoipsum-214.svg" },
                     { id: 2, name: "Bright Solutions", stage: "awaiting-info", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£78k", contact: "Sarah Jones", email: "sarah@bright.com", logo: "images/logos/logoipsum-223.svg" },
                     { id: 3, name: "Creative Minds", stage: "changes-needed", lastUpdate: "3 hours ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Mike Wilson", email: "mike@creative.com", logo: "images/logos/logoipsum-224.svg" },
-                    { id: 4, name: "Dynamic Enterprises", stage: "ready-to-process", lastUpdate: "1 hour ago", notes: "", employees: 156, monthlyPayroll: "£445k", contact: "Lisa Brown", email: "lisa@dynamic.com", logo: "images/logos/logoipsum-225.svg" },
-                    { id: 5, name: "Elite Manufacturing", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Tom Davis", email: "tom@elite.com", logo: "images/logos/logoipsum-226.svg" },
-                    { id: 6, name: "Future Tech", stage: "processing", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£98k", contact: "Emma Taylor", email: "emma@future.com", logo: "images/logos/logoipsum-227.svg" },
-                    { id: 7, name: "Global Ventures", stage: "complete", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "David Lee", email: "david@global.com", logo: "images/logos/logoipsum-236.svg" },
+                    { id: 4, name: "Dynamic Enterprises", stage: "ready-for-processing", lastUpdate: "1 hour ago", notes: "", employees: 156, monthlyPayroll: "£445k", contact: "Lisa Brown", email: "lisa@dynamic.com", logo: "images/logos/logoipsum-225.svg" },
+                    { id: 5, name: "Elite Manufacturing", stage: "ready-for-processing", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Tom Davis", email: "tom@elite.com", logo: "images/logos/logoipsum-226.svg" },
+                    { id: 6, name: "Future Tech", stage: "payrollcomplete", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£98k", contact: "Emma Taylor", email: "emma@future.com", logo: "images/logos/logoipsum-227.svg" },
+                    { id: 7, name: "Global Ventures", stage: "payrollcomplete", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "David Lee", email: "david@global.com", logo: "images/logos/logoipsum-236.svg" },
                     { id: 8, name: "Horizon Industries", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "Anna White", email: "anna@horizon.com", logo: "images/logos/logoipsum-242.svg" },
                     { id: 9, name: "Innovation Labs", stage: "awaiting-info", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£145k", contact: "Chris Green", email: "chris@innovation.com", logo: "images/logos/logoipsum-245.svg" },
                     { id: 10, name: "Jupiter Consulting", stage: "changes-needed", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£67k", contact: "Rachel Black", email: "rachel@jupiter.com", logo: "images/logos/logoipsum-248.svg" },
-                    { id: 11, name: "Keystone Partners", stage: "ready-to-process", lastUpdate: "4 hours ago", notes: "", employees: 67, monthlyPayroll: "£178k", contact: "James Carter", email: "james@keystone.com", logo: "images/logos/logoipsum-249.svg" },
-                    { id: 12, name: "Landmark Services", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 34, monthlyPayroll: "£89k", contact: "Sophie Turner", email: "sophie@landmark.com", logo: "images/logos/logoipsum-252.svg" },
+                    { id: 11, name: "Keystone Partners", stage: "ready-for-processing", lastUpdate: "4 hours ago", notes: "", employees: 67, monthlyPayroll: "£178k", contact: "James Carter", email: "james@keystone.com", logo: "images/logos/logoipsum-249.svg" },
+                    { id: 12, name: "Landmark Services", stage: "ready-for-processing", lastUpdate: "2 hours ago", notes: "", employees: 34, monthlyPayroll: "£89k", contact: "Sophie Turner", email: "sophie@landmark.com", logo: "images/logos/logoipsum-252.svg" },
                     { id: 13, name: "Metro Solutions", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£123k", contact: "Alex Morgan", email: "alex@metro.com", logo: "images/logos/logoipsum-257.svg" },
                     { id: 14, name: "NextGen Analytics", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 78, monthlyPayroll: "£201k", contact: "Kelly Adams", email: "kelly@nextgen.com", logo: "images/logos/logoipsum-261.svg" },
                     { id: 15, name: "Oceanic Holdings", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 123, monthlyPayroll: "£334k", contact: "Ryan Cooper", email: "ryan@oceanic.com", logo: "images/logos/logoipsum-291.svg" },
@@ -1500,62 +1607,31 @@
                         id: "awaiting-info", 
                         title: "Awaiting Info",
                         color: "blue",
-                        aiActions: [
-                            "Parse incoming client responses",
-                            "Extract payroll changes", 
-                            "Categorize by urgency"
-                        ]
+                        aiActions: []
                     },
                     { 
                         id: "changes-needed", 
                         title: "Changes Needed",
                         color: "error",
-                        aiActions: [
-                            "Validate change requests",
-                            "Flag complex modifications",
-                            "Prepare processing queue"
-                        ],
+                        aiActions: [],
                         subColumns: [
                             { id: "new-starters", title: "New Starters", color: "brand" },
-                            { id: "payslip-changes", title: "Payslip Changes", color: "warning" },
-                            { id: "other-changes", title: "Other Changes", color: "gray" }
+                            { id: "leavers", title: "Leavers", color: "warning" },
+                            { id: "pay-adjustments", title: "Pay Adjustments", color: "success" },
+                            { id: "other", title: "Other", color: "gray" }
                         ]
                     },
                     { 
-                        id: "ready-to-process", 
-                        title: "Draft Ready",
-                        color: "warning",
-                        aiActions: [
-                            "Calculate payroll adjustments",
-                            "Generate preview reports",
-                            "Queue for client approval"
-                        ]
-                    },
-                    { 
-                        id: "client-approved", 
-                        title: "Client Approved",
+                        id: "ready-for-processing", 
+                        title: "Ready for Processing",
                         color: "success",
-                        aiActions: [
-                            "Process on Xero, then HMRC",
-                            "Process pension contributions",
-                            "Generate payslips"
-                        ]
-                    },
-                    { 
-                        id: "processing", 
-                        title: "Processing",
-                        color: "brand",
                         aiActions: []
                     },
                     { 
-                        id: "complete", 
-                        title: "Complete",
+                        id: "payrollcomplete", 
+                        title: "PayRollComplete",
                         color: "gray",
-                        aiActions: [
-                            "Generate summary report",
-                            "Archive completed workflow",
-                            "Prepare for next month"
-                        ]
+                        aiActions: []
                     }
                 ]);
 
@@ -1619,7 +1695,7 @@
 
                 // Computed properties
                 const totalCompanies = computed(() => companies.value.length);
-                const completedCompanies = computed(() => companies.value.filter(c => c.stage === 'complete').length);
+                const completedCompanies = computed(() => companies.value.filter(c => c.stage === 'payrollcomplete').length);
                 const pendingCompanies = computed(() => totalCompanies.value - completedCompanies.value);
 
                 // Methods
@@ -1629,6 +1705,31 @@
 
                 const getFilteredCompaniesByStage = (stage) => {
                     return filteredCompanies.value.filter(company => company.stage === stage);
+                };
+
+                const getCompaniesBySubStage = (subStageId) => {
+                    // For demo purposes, distribute changes-needed companies among sub-stages
+                    const changesNeededCompanies = companies.value.filter(company => company.stage === 'changes-needed');
+                    const subStages = ['new-starters', 'leavers', 'pay-adjustments', 'other'];
+                    const subStageIndex = subStages.indexOf(subStageId);
+                    
+                    if (subStageIndex === -1) return [];
+                    
+                    return changesNeededCompanies.filter((company, index) => index % 4 === subStageIndex);
+                };
+
+                const getSubColumnStyle = (subColumn) => {
+                    const colorMap = {
+                        'brand': 'var(--color-brand-500)',
+                        'warning': 'var(--color-warning-500)',
+                        'success': 'var(--color-success-500)',
+                        'gray': 'var(--color-gray-500)',
+                        'blue': 'var(--color-blue-500)',
+                        'error': 'var(--color-error-500)'
+                    };
+                    return {
+                        backgroundColor: colorMap[subColumn.color] || 'var(--color-gray-500)'
+                    };
                 };
 
                 const getCurrentColumn = () => {
@@ -1657,40 +1758,13 @@
                     return colorMap[column.color] || colorMap.brand;
                 };
 
-                const getCompaniesBySubStage = (subStageId) => {
-                    // For demo purposes, distribute changes-needed companies among sub-stages
-                    const changesNeededCompanies = companies.value.filter(company => company.stage === 'changes-needed');
-                    const subStages = ['new-starters', 'payslip-changes', 'other-changes'];
-                    const subStageIndex = subStages.indexOf(subStageId);
-                    
-                    if (subStageIndex === -1) return [];
-                    
-                    return changesNeededCompanies.filter((company, index) => index % 3 === subStageIndex);
-                };
-
-                const getSubColumnStyle = (subColumn) => {
-                    const colorMap = {
-                        'brand': 'var(--color-brand-500)',
-                        'warning': 'var(--color-warning-500)',
-                        'success': 'var(--color-success-500)',
-                        'gray': 'var(--color-gray-500)',
-                        'blue': 'var(--color-blue-500)',
-                        'error': 'var(--color-error-500)'
-                    };
-                    return {
-                        backgroundColor: colorMap[subColumn.color] || 'var(--color-gray-500)'
-                    };
-                };
-
                 const getColumnIcon = (columnId) => {
                     const icons = {
                         'to-contact': '<path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>',
                         'awaiting-info': '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>',
                         'changes-needed': '<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>',
-                        'ready-to-process': '<path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/>',
-                        'client-approved': '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>',
-                        'processing': '<path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 000 1.788l4 2.094A1 1 0 0017 13.236V15l-4-2.236z"/><path d="M15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"/>',
-                        'complete': '<path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>'
+                        'ready-for-processing': '<path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.381z" clip-rule="evenodd"/>',
+                        'payrollcomplete': '<path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>'
                     };
                     return icons[columnId] || icons['to-contact'];
                 };
@@ -1717,10 +1791,8 @@
                         const nextStages = {
                             'to-contact': 'awaiting-info',
                             'awaiting-info': 'changes-needed', 
-                            'changes-needed': 'ready-to-process',
-                            'ready-to-process': 'client-approved',
-                            'client-approved': 'processing',
-                            'processing': 'complete'
+                            'changes-needed': 'ready-for-processing',
+                            'ready-for-processing': 'payrollcomplete'
                         };
 
                         const companiesToProcess = getCompaniesByStage(currentColumn.value);
@@ -1780,9 +1852,8 @@
                         'to-contact': 'I can reach out to all your clients with personalized payroll change requests, including deadline reminders and follow-up schedules. This will ensure everyone knows what information you need for the December payroll run.',
                         'awaiting-info': 'I notice you\'re waiting for client responses. I can parse through incoming emails and documents to extract payroll changes automatically, then categorize them by urgency so you can prioritize your work.',
                         'changes-needed': 'I can validate all the change requests you\'ve received, cross-check them for accuracy, and flag any complex modifications that might need your personal attention. This ensures nothing gets missed.',
-                        'ready-to-process': 'Perfect! I can calculate all payroll adjustments, generate preview reports for your review, and prepare everything for client approval. This will save you hours of manual calculations.',
-                        'client-approved': 'Great news! I can now process these approved payrolls through Xero and HMRC automatically, handle pension contributions, and generate all the payslips. Everything will be completed within the compliance deadlines.',
-                        'complete': 'Excellent work! I can generate comprehensive summary reports for this payroll run, archive all the completed workflows, and start preparing the framework for next month\'s payroll cycle.'
+                        'ready-for-processing': 'Perfect! I can calculate all payroll adjustments, generate preview reports for your review, and prepare everything for processing. This will save you hours of manual calculations.',
+                        'payrollcomplete': 'Excellent work! I can generate comprehensive summary reports for this payroll run, archive all the completed workflows, and start preparing the framework for next month\'s payroll cycle.'
                     };
                     return messages[currentColumn.value] || 'I can help automate this workflow stage for you.';
                 };
@@ -1792,9 +1863,8 @@
                         'to-contact': 'Send All Client Requests',
                         'awaiting-info': 'Process Incoming Responses',
                         'changes-needed': 'Validate All Changes',
-                        'ready-to-process': 'Calculate & Prepare Reports',
-                        'client-approved': 'Process Payrolls Now',
-                        'complete': 'Generate Summary & Archive'
+                        'ready-for-processing': 'Calculate & Prepare Reports',
+                        'payrollcomplete': 'Generate Summary & Archive'
                     };
                     return ctas[currentColumn.value] || 'Start Processing';
                 };
@@ -1807,10 +1877,8 @@
                         'to-contact': 'This company is ready to be contacted for December payroll information. No previous activity recorded.',
                         'awaiting-info': 'We\'ve reached out to this company and are waiting for their payroll change information. Initial contact made successfully.',
                         'changes-needed': 'The company has responded with payroll changes that need to be processed. Information has been validated and is ready for review.',
-                        'ready-to-process': 'All payroll changes have been validated and approved. The system is ready to calculate adjustments and generate reports.',
-                        'client-approved': 'The client has approved all payroll calculations. Ready to process through Xero, HMRC, and generate payslips.',
-                        'processing': 'Payroll is currently being processed through our systems. All calculations and submissions are in progress.',
-                        'complete': 'Payroll has been successfully completed for this month. All processes finished and archived.'
+                        'ready-for-processing': 'All payroll changes have been validated and approved. The system is ready to calculate adjustments and generate reports.',
+                        'payrollcomplete': 'Payroll has been successfully completed for this month. All processes finished and archived.'
                     };
                     
                     return stageDescriptions[selectedCompany.value.stage] || 'No activity summary available.';
@@ -1833,16 +1901,11 @@
                             { id: 6, title: 'Process Leaver', description: 'Remove employee who left last month', priority: 'medium', dueDate: 'Today' },
                             { id: 7, title: 'Update Salaries', description: 'Apply salary increases for 3 employees', priority: 'medium', dueDate: 'Tomorrow' }
                         ],
-                        'ready-to-process': [
+                        'ready-for-processing': [
                             { id: 8, title: 'Final Validation', description: 'Review all changes before processing', priority: 'high', dueDate: 'Today' },
-                            { id: 9, title: 'Generate Preview', description: 'Create payroll preview for client approval', priority: 'high', dueDate: 'Today' }
+                            { id: 9, title: 'Generate Preview', description: 'Create payroll preview for processing', priority: 'high', dueDate: 'Today' }
                         ],
-                        'client-approved': [
-                            { id: 10, title: 'Process via Xero', description: 'Submit payroll through Xero integration', priority: 'high', dueDate: 'Today' },
-                            { id: 11, title: 'HMRC Submission', description: 'Submit RTI to HMRC', priority: 'high', dueDate: 'Today' }
-                        ],
-                        'processing': [],
-                        'complete': [
+                        'payrollcomplete': [
                             { id: 12, title: 'Archive Records', description: 'Archive completed payroll data', priority: 'low', dueDate: 'Next week' }
                         ]
                     };
@@ -2332,10 +2395,8 @@ Start typing your notes here...`;
                                     'to-contact': 0,
                                     'awaiting-info': 1,
                                     'changes-needed': 2,
-                                    'ready-to-process': 3,
-                                    'client-approved': 4,
-                                    'processing': 5,
-                                    'complete': 6
+                                    'ready-for-processing': 3,
+                                    'payrollcomplete': 4
                                 };
                                 return (stageOrder[a.stage] || 0) - (stageOrder[b.stage] || 0);
                             default:
@@ -2476,14 +2537,14 @@ Start typing your notes here...`;
                     allSelected,
                     // Methods
                     getCompaniesByStage,
+                    getCompaniesBySubStage,
                     getFilteredCompaniesByStage,
                     getCurrentColumn,
                     getCurrentStageTitle,
                     getNotesArray,
                     getColumnStyle,
-                    getColumnIcon,
-                    getCompaniesBySubStage,
                     getSubColumnStyle,
+                    getColumnIcon,
                     getAIChatMessage,
                     getAICTA,
                     openAiModal,
