@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petria.ai - Enterprise Payroll Management</title>
+    <title>Petria Payroll Assistant</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
@@ -430,26 +430,31 @@
             
             <!-- Navigation icons in middle -->
             <div class="flex flex-col space-y-4">
-                <!-- Dashboard - Active page -->
-                <div class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center bg-white/20 backdrop-blur-sm transition-colors">
+                <!-- Board View -->
+                <button 
+                    @click="currentView = 'kanban'"
+                    :class="[
+                        'w-10 h-10 mx-auto rounded-lg flex items-center justify-center transition-colors',
+                        currentView === 'kanban' ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'
+                    ]"
+                >
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                     </svg>
-                </div>
+                </button>
                 
-                <!-- Calendar -->
-                <a href="calendar.html" class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
+                <!-- Table View -->
+                <button 
+                    @click="currentView = 'table'"
+                    :class="[
+                        'w-10 h-10 mx-auto rounded-lg flex items-center justify-center transition-colors',
+                        currentView === 'table' ? 'bg-white/20 backdrop-blur-sm' : 'hover:bg-white/10'
+                    ]"
+                >
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0V4a1 1 0 011-1h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"></path>
                     </svg>
-                </a>
-                
-                <!-- Reports -->
-                <a href="reports.html" class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                    </svg>
-                </a>
+                </button>
             </div>
             
             <!-- User profile at bottom -->
@@ -503,31 +508,32 @@
         <div class="absolute top-0 left-0 right-0 z-40 px-6 py-4 border-b" style="background-color: white; border-color: var(--color-gray-200);">
             <div class="flex items-center justify-between">
                 <div class="min-w-0 flex-1 pl-16">
-                    <h2 class="text-xl lg:text-2xl font-bold" style="color: var(--color-gray-900);">July Monthly Payroll</h2>
+                    <h2 class="text-xl lg:text-2xl font-bold" style="color: var(--color-gray-900);">Petria Payroll Assistant</h2>
                     <p class="text-sm mt-1" style="color: var(--color-gray-500);">{{ totalCompanies }} companies • {{ completedCompanies }} completed</p>
                 </div>
                 
                 <!-- Center: View Switcher -->
                 <div class="flex items-center bg-gray-100 rounded-lg p-1" style="background-color: var(--color-gray-100);">
                     <button 
-                        @click="currentView = 'kanban'"
-                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentView === 'kanban' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
-                        :style="currentView === 'kanban' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
+                        @click="currentFilter = 'all'"
+                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentFilter === 'all' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
+                        :style="currentFilter === 'all' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
                     >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
-                        </svg>
-                        <span>Board</span>
+                        <span>All</span>
                     </button>
                     <button 
-                        @click="currentView = 'table'"
-                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentView === 'table' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
-                        :style="currentView === 'table' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
+                        @click="currentFilter = 'weekly'"
+                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentFilter === 'weekly' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
+                        :style="currentFilter === 'weekly' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
                     >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                        </svg>
-                        <span>Table</span>
+                        <span>Weekly</span>
+                    </button>
+                    <button 
+                        @click="currentFilter = 'monthly'"
+                        :class="['flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200', currentFilter === 'monthly' ? 'bg-white shadow-sm' : 'hover:bg-white/50']"
+                        :style="currentFilter === 'monthly' ? 'color: var(--color-brand-500); box-shadow: var(--shadow-theme-xs);' : 'color: var(--color-gray-600);'"
+                    >
+                        <span>Monthly</span>
                     </button>
                 </div>
                 
@@ -725,35 +731,17 @@
                                             <h4 class="font-semibold text-base leading-tight" style="color: var(--color-gray-900);">{{ company.name }}</h4>
                                         </div>
                                         
-                                        <!-- Signed Off Status -->
-                                        <div v-if="['client-approved', 'processing'].includes(company.stage)" class="flex items-center justify-center mb-3">
-                                            <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full" style="background-color: var(--color-success-50);">
-                                                <div 
-                                                    v-if="company.stage === 'client-approved'" 
-                                                    class="w-4 h-4 rounded-full flex items-center justify-center"
-                                                    style="background-color: var(--color-success-500);"
-                                                >
-                                                    <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <div 
-                                                    v-if="company.stage === 'complete'" 
-                                                    class="w-4 h-4 rounded-full flex items-center justify-center brand-gradient"
-                                                >
-                                                    <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <span class="text-xs font-medium" style="color: var(--color-success-700);">Signed Off</span>
-                                            </div>
-                                        </div>
                                         
                                         <div v-if="company.stage !== 'to-contact'" class="text-sm mb-3" style="color: var(--color-gray-500);">{{ company.lastUpdate }}</div>
                                         
                                         <div class="flex justify-between items-center text-sm mb-3" style="color: var(--color-gray-600);">
-                                            <span>{{ company.employees }} employees</span>
-                                            <span class="font-semibold">{{ company.monthlyPayroll }}</span>
+                                            <div class="flex items-center space-x-2">
+                                                <span>{{ company.payrunDate }}</span>
+                                                <span :class="['text-xs font-medium px-1 py-0.5 rounded-full text-white text-xs', company.frequency === 'weekly' ? 'bg-blue-500' : 'bg-green-500']" style="font-size: 10px;">
+                                                    {{ company.frequency === 'weekly' ? 'W' : 'M' }}
+                                                </span>
+                                            </div>
+                                            <span class="font-semibold">{{ company.employees }} employees</span>
                                         </div>
                                         
                                         <div 
@@ -762,6 +750,16 @@
                                             style="background-color: var(--color-gray-50); color: var(--color-gray-700);"
                                         >
                                             {{ company.notes }}
+                                        </div>
+                                        
+                                        <!-- Simple Run Payroll Button for Client-Approved Companies -->
+                                        <div v-if="company.stage === 'client-approved'" class="mt-3 mb-3">
+                                            <button 
+                                                @click.stop="processPayroll(company)" 
+                                                class="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+                                            >
+                                                Run Payroll
+                                            </button>
                                         </div>
                                         
                                         <div v-if="company.processing" class="flex items-center space-x-2 mt-3">
@@ -820,35 +818,17 @@
                                 <h4 class="font-semibold text-base leading-tight" style="color: var(--color-gray-900);">{{ company.name }}</h4>
                             </div>
                             
-                            <!-- Signed Off Status -->
-                            <div v-if="['client-approved', 'processing'].includes(company.stage)" class="flex items-center justify-center mb-3">
-                                <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full" style="background-color: var(--color-success-50);">
-                                    <div 
-                                        v-if="company.stage === 'client-approved'" 
-                                        class="w-4 h-4 rounded-full flex items-center justify-center"
-                                        style="background-color: var(--color-success-500);"
-                                    >
-                                        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                    <div 
-                                        v-if="company.stage === 'complete'" 
-                                        class="w-4 h-4 rounded-full flex items-center justify-center brand-gradient"
-                                    >
-                                        <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                    </div>
-                                    <span class="text-xs font-medium" style="color: var(--color-success-700);">Signed Off</span>
-                                </div>
-                            </div>
                             
                             <div v-if="company.stage !== 'to-contact'" class="text-sm mb-3" style="color: var(--color-gray-500);">{{ company.lastUpdate }}</div>
                             
                             <div class="flex justify-between items-center text-sm mb-3" style="color: var(--color-gray-600);">
-                                <span>{{ company.employees }} employees</span>
-                                <span class="font-semibold">{{ company.monthlyPayroll }}</span>
+                                <div class="flex items-center space-x-2">
+                                    <span>{{ company.payrunDate }}</span>
+                                    <span :class="['text-xs font-medium px-1 py-0.5 rounded-full text-white', company.frequency === 'weekly' ? 'bg-blue-500' : 'bg-green-500']" style="font-size: 10px;">
+                                        {{ company.frequency === 'weekly' ? 'W' : 'M' }}
+                                    </span>
+                                </div>
+                                <span class="font-semibold">{{ company.employees }} employees</span>
                             </div>
                             
                             <div 
@@ -857,6 +837,16 @@
                                 style="background-color: var(--color-gray-50); color: var(--color-gray-700);"
                             >
                                 {{ company.notes }}
+                            </div>
+                            
+                            <!-- Simple Run Payroll Button for Client-Approved Companies -->
+                            <div v-if="company.stage === 'client-approved'" class="mt-3 mb-3">
+                                <button 
+                                    @click.stop="processPayroll(company)" 
+                                    class="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+                                >
+                                    Run Payroll
+                                </button>
                             </div>
                             
                             <div v-if="company.processing" class="flex items-center space-x-2 mt-3">
@@ -1439,6 +1429,7 @@
             </div>
         </div>
 
+
     </div>
 
     <script>
@@ -1452,36 +1443,36 @@
                 
                 // Companies data
                 const companies = ref([
-                    { id: 1, name: "Acme Corp", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "John Smith", email: "john@acme.com", logo: "images/logos/logoipsum-214.svg" },
-                    { id: 2, name: "Bright Solutions", stage: "awaiting-info", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£78k", contact: "Sarah Jones", email: "sarah@bright.com", logo: "images/logos/logoipsum-223.svg" },
-                    { id: 3, name: "Creative Minds", stage: "changes-needed", lastUpdate: "3 hours ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Mike Wilson", email: "mike@creative.com", logo: "images/logos/logoipsum-224.svg" },
-                    { id: 4, name: "Dynamic Enterprises", stage: "ready-to-process", lastUpdate: "1 hour ago", notes: "", employees: 156, monthlyPayroll: "£445k", contact: "Lisa Brown", email: "lisa@dynamic.com", logo: "images/logos/logoipsum-225.svg" },
-                    { id: 5, name: "Elite Manufacturing", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Tom Davis", email: "tom@elite.com", logo: "images/logos/logoipsum-226.svg" },
-                    { id: 6, name: "Future Tech", stage: "processing", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£98k", contact: "Emma Taylor", email: "emma@future.com", logo: "images/logos/logoipsum-227.svg" },
-                    { id: 7, name: "Global Ventures", stage: "complete", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "David Lee", email: "david@global.com", logo: "images/logos/logoipsum-236.svg" },
-                    { id: 8, name: "Horizon Industries", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "Anna White", email: "anna@horizon.com", logo: "images/logos/logoipsum-242.svg" },
-                    { id: 9, name: "Innovation Labs", stage: "awaiting-info", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£145k", contact: "Chris Green", email: "chris@innovation.com", logo: "images/logos/logoipsum-245.svg" },
-                    { id: 10, name: "Jupiter Consulting", stage: "changes-needed", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£67k", contact: "Rachel Black", email: "rachel@jupiter.com", logo: "images/logos/logoipsum-248.svg" },
-                    { id: 11, name: "Keystone Partners", stage: "ready-to-process", lastUpdate: "4 hours ago", notes: "", employees: 67, monthlyPayroll: "£178k", contact: "James Carter", email: "james@keystone.com", logo: "images/logos/logoipsum-249.svg" },
-                    { id: 12, name: "Landmark Services", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 34, monthlyPayroll: "£89k", contact: "Sophie Turner", email: "sophie@landmark.com", logo: "images/logos/logoipsum-252.svg" },
-                    { id: 13, name: "Metro Solutions", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£123k", contact: "Alex Morgan", email: "alex@metro.com", logo: "images/logos/logoipsum-257.svg" },
-                    { id: 14, name: "NextGen Analytics", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 78, monthlyPayroll: "£201k", contact: "Kelly Adams", email: "kelly@nextgen.com", logo: "images/logos/logoipsum-261.svg" },
-                    { id: 15, name: "Oceanic Holdings", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 123, monthlyPayroll: "£334k", contact: "Ryan Cooper", email: "ryan@oceanic.com", logo: "images/logos/logoipsum-291.svg" },
-                    { id: 16, name: "Prime Digital", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£118k", contact: "Maya Patel", email: "maya@prime.com", logo: "images/logos/logoipsum-298.svg" },
-                    { id: 17, name: "Quantum Research", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 89, monthlyPayroll: "£245k", contact: "Ben Foster", email: "ben@quantum.com", logo: "images/logos/logoipsum-327.svg" },
-                    { id: 18, name: "Radical Innovations", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£149k", contact: "Zoe Martinez", email: "zoe@radical.com", logo: "images/logos/logoipsum-332.svg" },
-                    { id: 19, name: "Sterling Group", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Noah Johnson", email: "noah@sterling.com", logo: "images/logos/logoipsum-338.svg" },
-                    { id: 20, name: "Titan Industries", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 134, monthlyPayroll: "£378k", contact: "Grace Kim", email: "grace@titan.com", logo: "images/logos/logoipsum-339.svg" },
-                    { id: 21, name: "Urban Development", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "Lucas Wright", email: "lucas@urban.com", logo: "images/logos/logoipsum-344.svg" },
-                    { id: 22, name: "Victory Logistics", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "Aria Scott", email: "aria@victory.com", logo: "images/logos/logoipsum-351.svg" },
-                    { id: 23, name: "Wavelength Media", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£92k", contact: "Ethan Barnes", email: "ethan@wave.com", logo: "images/logos/logoipsum-353.svg" },
-                    { id: 24, name: "Xenon Technologies", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Ivy Chen", email: "ivy@xenon.com", logo: "images/logos/logoipsum-355.svg" },
-                    { id: 25, name: "Yonder Investments", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 56, monthlyPayroll: "£156k", contact: "Owen Phillips", email: "owen@yonder.com", logo: "images/logos/logoipsum-357.svg" },
-                    { id: 26, name: "Zenith Corporation", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 167, monthlyPayroll: "£445k", contact: "Luna Rodriguez", email: "luna@zenith.com", logo: "images/logos/logoipsum-359.svg" },
-                    { id: 27, name: "Alpha Dynamics", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 45, monthlyPayroll: "£119k", contact: "Felix Anderson", email: "felix@alpha.com", logo: "images/logos/logoipsum-363.svg" },
-                    { id: 28, name: "Beta Systems", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£203k", contact: "Sage Thompson", email: "sage@beta.com", logo: "images/logos/logoipsum-365.svg" },
-                    { id: 29, name: "Gamma Enterprises", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£87k", contact: "River Martinez", email: "river@gamma.com", logo: "images/logos/logoipsum-376.svg" },
-                    { id: 30, name: "Delta Solutions", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 67, monthlyPayroll: "£176k", contact: "Sky Peterson", email: "sky@delta.com", logo: "images/logos/logoipsum-377.svg" }
+                    { id: 1, name: "Acme Corp", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "John Smith", email: "john@acme.com", logo: "images/logos/logoipsum-214.svg", payrunDate: "15 Jan 2025", frequency: "weekly" },
+                    { id: 2, name: "Bright Solutions", stage: "awaiting-info", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£78k", contact: "Sarah Jones", email: "sarah@bright.com", logo: "images/logos/logoipsum-223.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 3, name: "Creative Minds", stage: "changes-needed", lastUpdate: "3 hours ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Mike Wilson", email: "mike@creative.com", logo: "images/logos/logoipsum-224.svg", payrunDate: "22 Jan 2025", frequency: "weekly" },
+                    { id: 4, name: "Dynamic Enterprises", stage: "ready-to-process", lastUpdate: "1 hour ago", notes: "", employees: 156, monthlyPayroll: "£445k", contact: "Lisa Brown", email: "lisa@dynamic.com", logo: "images/logos/logoipsum-225.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 5, name: "Elite Manufacturing", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Tom Davis", email: "tom@elite.com", logo: "images/logos/logoipsum-226.svg", payrunDate: "29 Jan 2025", frequency: "weekly" },
+                    { id: 6, name: "Future Tech", stage: "client-approved", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£98k", contact: "Emma Taylor", email: "emma@future.com", logo: "images/logos/logoipsum-227.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 7, name: "Global Ventures", stage: "complete", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "David Lee", email: "david@global.com", logo: "images/logos/logoipsum-236.svg", payrunDate: "8 Jan 2025", frequency: "weekly" },
+                    { id: 8, name: "Horizon Industries", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "Anna White", email: "anna@horizon.com", logo: "images/logos/logoipsum-242.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 9, name: "Innovation Labs", stage: "awaiting-info", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£145k", contact: "Chris Green", email: "chris@innovation.com", logo: "images/logos/logoipsum-245.svg", payrunDate: "15 Jan 2025", frequency: "weekly" },
+                    { id: 10, name: "Jupiter Consulting", stage: "changes-needed", lastUpdate: "1 hour ago", notes: "", employees: 23, monthlyPayroll: "£67k", contact: "Rachel Black", email: "rachel@jupiter.com", logo: "images/logos/logoipsum-248.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 11, name: "Keystone Partners", stage: "ready-to-process", lastUpdate: "4 hours ago", notes: "", employees: 67, monthlyPayroll: "£178k", contact: "James Carter", email: "james@keystone.com", logo: "images/logos/logoipsum-249.svg", payrunDate: "22 Jan 2025", frequency: "weekly" },
+                    { id: 12, name: "Landmark Services", stage: "client-approved", lastUpdate: "2 hours ago", notes: "", employees: 34, monthlyPayroll: "£89k", contact: "Sophie Turner", email: "sophie@landmark.com", logo: "images/logos/logoipsum-252.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 13, name: "Metro Solutions", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£123k", contact: "Alex Morgan", email: "alex@metro.com", logo: "images/logos/logoipsum-257.svg", payrunDate: "15 Jan 2025", frequency: "weekly" },
+                    { id: 14, name: "NextGen Analytics", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 78, monthlyPayroll: "£201k", contact: "Kelly Adams", email: "kelly@nextgen.com", logo: "images/logos/logoipsum-261.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 15, name: "Oceanic Holdings", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 123, monthlyPayroll: "£334k", contact: "Ryan Cooper", email: "ryan@oceanic.com", logo: "images/logos/logoipsum-291.svg", payrunDate: "29 Jan 2025", frequency: "weekly" },
+                    { id: 16, name: "Prime Digital", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£118k", contact: "Maya Patel", email: "maya@prime.com", logo: "images/logos/logoipsum-298.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 17, name: "Quantum Research", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 89, monthlyPayroll: "£245k", contact: "Ben Foster", email: "ben@quantum.com", logo: "images/logos/logoipsum-327.svg", payrunDate: "22 Jan 2025", frequency: "weekly" },
+                    { id: 18, name: "Radical Innovations", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 56, monthlyPayroll: "£149k", contact: "Zoe Martinez", email: "zoe@radical.com", logo: "images/logos/logoipsum-332.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 19, name: "Sterling Group", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 67, monthlyPayroll: "£189k", contact: "Noah Johnson", email: "noah@sterling.com", logo: "images/logos/logoipsum-338.svg", payrunDate: "15 Jan 2025", frequency: "weekly" },
+                    { id: 20, name: "Titan Industries", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 134, monthlyPayroll: "£378k", contact: "Grace Kim", email: "grace@titan.com", logo: "images/logos/logoipsum-339.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 21, name: "Urban Development", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 78, monthlyPayroll: "£198k", contact: "Lucas Wright", email: "lucas@urban.com", logo: "images/logos/logoipsum-344.svg", payrunDate: "29 Jan 2025", frequency: "weekly" },
+                    { id: 22, name: "Victory Logistics", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 45, monthlyPayroll: "£125k", contact: "Aria Scott", email: "aria@victory.com", logo: "images/logos/logoipsum-351.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 23, name: "Wavelength Media", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£92k", contact: "Ethan Barnes", email: "ethan@wave.com", logo: "images/logos/logoipsum-353.svg", payrunDate: "15 Jan 2025", frequency: "weekly" },
+                    { id: 24, name: "Xenon Technologies", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 89, monthlyPayroll: "£234k", contact: "Ivy Chen", email: "ivy@xenon.com", logo: "images/logos/logoipsum-355.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 25, name: "Yonder Investments", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 56, monthlyPayroll: "£156k", contact: "Owen Phillips", email: "owen@yonder.com", logo: "images/logos/logoipsum-357.svg", payrunDate: "22 Jan 2025", frequency: "weekly" },
+                    { id: 26, name: "Zenith Corporation", stage: "to-contact", lastUpdate: "3 hours ago", notes: "", employees: 167, monthlyPayroll: "£445k", contact: "Luna Rodriguez", email: "luna@zenith.com", logo: "images/logos/logoipsum-359.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 27, name: "Alpha Dynamics", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 45, monthlyPayroll: "£119k", contact: "Felix Anderson", email: "felix@alpha.com", logo: "images/logos/logoipsum-363.svg", payrunDate: "29 Jan 2025", frequency: "weekly" },
+                    { id: 28, name: "Beta Systems", stage: "to-contact", lastUpdate: "1 hour ago", notes: "", employees: 78, monthlyPayroll: "£203k", contact: "Sage Thompson", email: "sage@beta.com", logo: "images/logos/logoipsum-365.svg", payrunDate: "31 Jan 2025", frequency: "monthly" },
+                    { id: 29, name: "Gamma Enterprises", stage: "to-contact", lastUpdate: "4 hours ago", notes: "", employees: 34, monthlyPayroll: "£87k", contact: "River Martinez", email: "river@gamma.com", logo: "images/logos/logoipsum-376.svg", payrunDate: "15 Jan 2025", frequency: "weekly" },
+                    { id: 30, name: "Delta Solutions", stage: "to-contact", lastUpdate: "2 hours ago", notes: "", employees: 67, monthlyPayroll: "£176k", contact: "Sky Peterson", email: "sky@delta.com", logo: "images/logos/logoipsum-377.svg", payrunDate: "31 Jan 2025", frequency: "monthly" }
                 ]);
 
                 // Columns data
@@ -1542,25 +1533,50 @@
                         ]
                     },
                     { 
-                        id: "processing", 
-                        title: "Processing",
-                        color: "brand",
-                        aiActions: []
+                        id: "payrun-complete", 
+                        title: "Payroll Complete",
+                        color: "success",
+                        aiActions: [
+                            "Finalize payrun processing",
+                            "Generate payrun reports",
+                            "Prepare pension file"
+                        ]
+                    },
+                    { 
+                        id: "submit-pension-file", 
+                        title: "Submit Pension File",
+                        color: "warning",
+                        aiActions: [
+                            "Generate pension contribution file",
+                            "Submit to pension providers",
+                            "Track submission status"
+                        ]
+                    },
+                    { 
+                        id: "send-payslips", 
+                        title: "Send Payslips",
+                        color: "blue",
+                        aiActions: [
+                            "Generate employee payslips",
+                            "Send via email/portal",
+                            "Track delivery status"
+                        ]
                     },
                     { 
                         id: "complete", 
                         title: "Complete",
                         color: "gray",
                         aiActions: [
-                            "Generate summary report",
                             "Archive completed workflow",
-                            "Prepare for next month"
+                            "Generate final reports",
+                            "Prepare for next cycle"
                         ]
                     }
                 ]);
 
                 // Search and filter states
                 const searchQuery = ref('');
+                const currentFilter = ref('all');
                 
                 // Modal states
                 const showAIModal = ref(false);
@@ -1659,7 +1675,7 @@
 
                 const getCompaniesBySubStage = (subStageId) => {
                     // For demo purposes, distribute changes-needed companies among sub-stages
-                    const changesNeededCompanies = companies.value.filter(company => company.stage === 'changes-needed');
+                    const changesNeededCompanies = filteredCompanies.value.filter(company => company.stage === 'changes-needed');
                     const subStages = ['new-starters', 'payslip-changes', 'other-changes'];
                     const subStageIndex = subStages.indexOf(subStageId);
                     
@@ -1763,8 +1779,41 @@
                     showCompanyModal.value = false;
                 };
 
+
                 const hideActivityLog = () => {
                     showActivityLog.value = false;
+                };
+
+                // Simple payroll processing function
+                const processPayroll = (company) => {
+                    addLogEntry(`Starting payroll processing for ${company.name}`);
+                    
+                    // Set processing animation
+                    company.processing = true;
+                    company.lastUpdate = 'just now';
+                    
+                    // Simulate processing steps
+                    setTimeout(() => {
+                        addLogEntry(`Payroll submitted to Xero for ${company.name}`);
+                    }, 1000);
+                    
+                    setTimeout(() => {
+                        addLogEntry(`RTI submitted to HMRC for ${company.name}`);
+                    }, 2000);
+                    
+                    setTimeout(() => {
+                        addLogEntry(`Payslips generated for ${company.name}`);
+                    }, 3000);
+                    
+                    // Complete processing and move to next stage
+                    setTimeout(() => {
+                        company.processing = false;
+                        company.stage = 'payrun-complete';
+                        company.lastUpdate = 'just now';
+                        addLogEntry(`Payroll completed for ${company.name}`);
+                    }, 4000);
+                    
+                    showActivityLog.value = true;
                 };
 
                 const addLogEntry = (message) => {
@@ -2398,13 +2447,24 @@ Start typing your notes here...`;
 
                 // Filtered companies for both views
                 const filteredCompanies = computed(() => {
-                    if (!searchQuery.value) return companies.value;
-                    const query = searchQuery.value.toLowerCase();
-                    return companies.value.filter(company => 
-                        company.name.toLowerCase().includes(query) ||
-                        company.contact.toLowerCase().includes(query) ||
-                        company.email.toLowerCase().includes(query)
-                    );
+                    let filtered = companies.value;
+                    
+                    // Apply frequency filter
+                    if (currentFilter.value !== 'all') {
+                        filtered = filtered.filter(company => company.frequency === currentFilter.value);
+                    }
+                    
+                    // Apply search filter
+                    if (searchQuery.value) {
+                        const query = searchQuery.value.toLowerCase();
+                        filtered = filtered.filter(company => 
+                            company.name.toLowerCase().includes(query) ||
+                            company.contact.toLowerCase().includes(query) ||
+                            company.email.toLowerCase().includes(query)
+                        );
+                    }
+                    
+                    return filtered;
                 });
 
                 const clearSearch = () => {
@@ -2442,6 +2502,7 @@ Start typing your notes here...`;
                     companies,
                     columns,
                     searchQuery,
+                    currentFilter,
                     showAIModal,
                     showCompanyModal,
                     showActivityLog,
@@ -2492,6 +2553,7 @@ Start typing your notes here...`;
                     openCompanyModal,
                     closeCompanyModal,
                     hideActivityLog,
+                    processPayroll,
                     // Company modal methods
                     getCompanySummary,
                     getCompanyTasks,
